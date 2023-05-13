@@ -238,7 +238,7 @@ To fulfill the requirements of the users and artists on the platform, we would n
 
 1. User Authentication and Authorization
 
-```bash
+```
    - POST /auth/register: Register a new user account
    - POST /auth/login: Authenticate and log in a user
    - GET /auth/user: Get the currently authenticated user's details
@@ -246,7 +246,7 @@ To fulfill the requirements of the users and artists on the platform, we would n
 
 2. Generative Art Projects
 
-```bash
+```
    - POST /projects: Create a new generative art project
    - GET /projects: List all generative art projects
    - GET /projects/:id: Get a specific generative art project by ID
@@ -256,7 +256,7 @@ To fulfill the requirements of the users and artists on the platform, we would n
 
 3. NFT Minting
 
-```bash
+```
    - POST /nfts/mint: Mint a new NFT for a specific project
    - GET /nfts/:id: Get a specific NFT by ID
    - PUT /nfts/:id/reveal: Reveal a specific NFT by ID, updating its metadata
@@ -264,7 +264,7 @@ To fulfill the requirements of the users and artists on the platform, we would n
 
 4. NFT Trading
 
-```bash
+```
    - POST /nfts/:id/sell: List an NFT for sale
    - POST /nfts/:id/cancel: Cancel an NFT sale listing
    - POST /nfts/:id/buy: Buy an NFT listed for sale
@@ -275,27 +275,27 @@ To fulfill the requirements of the users and artists on the platform, we would n
 
 5. Market Statistics
 
-```bash
+```
    - GET /stats/overall: Get overall platform statistics
    - GET /stats/projects/:id: Get statistics for a specific generative art project
 ```
 
 6. User Collections
 
-```bash
+```
    - GET /users/:id/collection: Get the NFT collection for a specific user
 ```
 
 7. Decentralized Media Cluster
 
-```bash
+```
    - POST /media: Upload a file to the decentralized media cluster
    - GET /media/:id: Get a file from the decentralized media cluster by ID
 ```
 
 8. Rendering Pipeline
 
-```bash
+```
    - POST /render: Generate an image from generative art code and unique seed
 ```
 
@@ -459,6 +459,17 @@ CREATE TABLE market_statistics_charts (
 );
 ```
 
+### Improvement Proposals
+
+1. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
+2. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
+3. Batch minting: To improve the user experience and reduce gas fees, the platform can implement batch minting, allowing users to mint multiple NFTs in a single transaction. This would require updates to the `GenerativeArtNFT` smart contract and the frontend application to support batch minting.
+4. Gas fee estimation and optimization: The platform can provide users with an estimate of the gas fees required for minting and trading NFTs. Additionally, the platform can implement gas fee optimization techniques, such as using the GasToken or implementing a gas price oracle, to reduce the overall cost for users.
+5. Integration with third-party marketplaces and wallets: To increase the reach and adoption of the platform, it can be integrated with popular NFT marketplaces such as OpenSea, Rarible, and Foundation. Additionally, the platform can be made compatible with popular wallets like MetaMask, Trust Wallet, and Ledger, allowing users to manage their NFTs using their preferred wallets.
+6. Support for additional file formats and interactive generative art: The platform can be extended to support a variety of file formats for generative art, such as SVG, GIF, or even 3D models. This would allow artists to create more diverse and interactive generative art projects. The rendering pipeline would need to be updated to handle these additional formats.
+7. Enhanced analytics and reporting: The platform can provide more advanced analytics and reporting features, such as historical price charts, project rankings, and artist profiles. This would give users a better understanding of the market trends and help them make informed decisions when minting or trading NFTs.
+8. Implement a reputation system for artists: A reputation system can be introduced to help users identify trustworthy and high-quality artists. The reputation score can be based on factors such as the number of successful projects, total sales, and user reviews. This would encourage artists to maintain high standards and improve the overall quality of the platform.
+
 ### Conclusion
 
 In this case study, we have outlined the requirements, system architecture, and implementation schedule for a Generative Art platform on Ethereum. By implementing core smart contracts and designing a scalable system architecture, we can create a platform that allows artists to showcase their work and users to mint and trade unique NFTs. The following requirements are fulfilled:
@@ -491,14 +502,3 @@ In this case study, we have outlined the requirements, system architecture, and 
 
 7. Users have access to market statistics:
    - The API endpoints for market statistics provide the required data for overall and project-specific statistics, which can be displayed on the frontend application.
-
-### Improvement Proposals
-
-1. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
-2. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
-3. Batch minting: To improve the user experience and reduce gas fees, the platform can implement batch minting, allowing users to mint multiple NFTs in a single transaction. This would require updates to the `GenerativeArtNFT` smart contract and the frontend application to support batch minting.
-4. Gas fee estimation and optimization: The platform can provide users with an estimate of the gas fees required for minting and trading NFTs. Additionally, the platform can implement gas fee optimization techniques, such as using the GasToken or implementing a gas price oracle, to reduce the overall cost for users.
-5. Integration with third-party marketplaces and wallets: To increase the reach and adoption of the platform, it can be integrated with popular NFT marketplaces such as OpenSea, Rarible, and Foundation. Additionally, the platform can be made compatible with popular wallets like MetaMask, Trust Wallet, and Ledger, allowing users to manage their NFTs using their preferred wallets.
-6. Support for additional file formats and interactive generative art: The platform can be extended to support a variety of file formats for generative art, such as SVG, GIF, or even 3D models. This would allow artists to create more diverse and interactive generative art projects. The rendering pipeline would need to be updated to handle these additional formats.
-7. Enhanced analytics and reporting: The platform can provide more advanced analytics and reporting features, such as historical price charts, project rankings, and artist profiles. This would give users a better understanding of the market trends and help them make informed decisions when minting or trading NFTs.
-8. Implement a reputation system for artists: A reputation system can be introduced to help users identify trustworthy and high-quality artists. The reputation score can be based on factors such as the number of successful projects, total sales, and user reviews. This would encourage artists to maintain high standards and improve the overall quality of the platform.
