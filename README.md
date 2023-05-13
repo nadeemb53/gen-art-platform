@@ -1,24 +1,17 @@
-# gen-art-platform
+# Generative Art Platform
 
-Study Case Overview
+## Case Study
 
 In this case study, we'll be creating a Generative Art platform on the Ethereum blockchain. This platform will allow artists to publish their projects, and users can mint unique iterations of these projects as NFTs. We'll be focusing on the implementation of core smart contracts and providing a high-level overview of the system architecture.
 
-Deliverables:
+### Deliverables:
 
 1. Smart Contracts in Solidity
 2. Schema of the system architecture
 3. Explanations of various system components
 4. Rough projection of the implementation schedule
 
-Smart Contracts
-
-We will be implementing two core smart contracts for this application:
-
-1. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
-2. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
-
-System Architecture
+### System Architecture
 
 The system architecture consists of the following components:
 
@@ -30,22 +23,14 @@ The system architecture consists of the following components:
 6. Marketplace Smart Contract: A smart contract for trading NFTs.
 7. Backend Wallet Manager: A module for securely managing on-chain operations in the backend.
 
-Implementation Schedule
+### Smart Contracts
 
-1. Week 1-2: Design and implement the GenerativeArtProject and GenerativeArtNFT smart contracts.
-2. Week 3-4: Develop the backend server and API, including database schema and integration with smart contracts.
-3. Week 5-6: Implement the frontend application for browsing, minting, and trading NFTs.
-4. Week 7-8: Integrate the rendering pipeline and decentralized media cluster with the backend server.
-5. Week 9-10: Test the entire system, including smart contracts, frontend, and backend components.
-6. Week 11-12: Deploy the platform to a test network and perform user testing and bug fixing.
+We will be implementing two core smart contracts for this application:
 
-Improvement Proposals
+1. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
+2. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
 
-1. Implement different pricing strategies for minting NFTs, such as Step Dutch Auction and Linear Dutch Auction.
-2. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
-3. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
-
-GenerativeArtProject.sol:
+#### GenerativeArtProject.sol:
 
 ```solidity
 pragma solidity ^0.8.0;
@@ -104,7 +89,7 @@ contract GenerativeArtProject {
 }
 ```
 
-GenerativeArtNFT.sol:
+#### GenerativeArtNFT.sol:
 
 ```solidity
 pragma solidity ^0.8.0;
@@ -168,6 +153,17 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 }
 ```
 
+### Implementation Schedule
+
+1. Week 1-2: Design and implement the GenerativeArtProject and GenerativeArtNFT smart contracts.
+2. Week 3-4: Develop the backend server and API, including database schema and integration with smart contracts.
+3. Week 5-6: Implement the frontend application for browsing, minting, and trading NFTs.
+4. Week 7-8: Integrate the rendering pipeline and decentralized media cluster with the backend server.
+5. Week 9-10: Test the entire system, including smart contracts, frontend, and backend components.
+6. Week 11-12: Deploy the platform to a test network and perform user testing and bug fixing.
+
+### Traffic
+
 To handle a large volume of requests (2000 req/s) in a public API that exposes the internal database, we need to ensure that the architecture is designed to be scalable, efficient, and robust. Here are some strategies and best practices to achieve this:
 
 1. Use a load balancer: Deploy a load balancer, such as AWS Elastic Load Balancer or NGINX, to distribute incoming traffic across multiple instances of the API server. This helps to ensure that no single server is overwhelmed with traffic and helps to maintain high availability.
@@ -177,6 +173,14 @@ To handle a large volume of requests (2000 req/s) in a public API that exposes t
 3. Use a caching mechanism: Implement caching at various levels (in-memory, server-side, or client-side) to reduce the load on the database and improve response times. Popular caching solutions include Redis, Memcached, or even a CDN for caching static assets.
 
 4. Rate limiting: Implement rate limiting to prevent abuse of the API and to ensure fair usage among clients. Rate limiting can be applied at various levels, such as IP address, user account, or API key.
+
+### Improvement Proposals
+
+1. Implement different pricing strategies for minting NFTs, such as Step Dutch Auction and Linear Dutch Auction.
+2. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
+3. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
+
+### APIs
 
 To fulfill the requirements of the users and artists on the platform, we would need the following API endpoints:
 
@@ -243,7 +247,7 @@ To fulfill the requirements of the users and artists on the platform, we would n
    - POST /render: Generate an image from generative art code and unique seed
 ```
 
-Database schema:
+### Database schema:
 
 Table 1: GenerativeArtProjects
 
