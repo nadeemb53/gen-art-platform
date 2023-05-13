@@ -170,62 +170,6 @@ The Listener/Indexer service can be implemented using a Node.js server that conn
 
 To store data collected by the Listener/Indexer service, we will need the following additional database tables:
 
-1. Contract Events
-
-```sql
-CREATE TABLE contract_events (
-  id SERIAL PRIMARY KEY,
-  event_name VARCHAR(255) NOT NULL,
-  contract_address VARCHAR(255) NOT NULL,
-  block_number INTEGER NOT NULL,
-  transaction_hash VARCHAR(255) NOT NULL,
-  event_data JSONB NOT NULL,
-  created_at TIMESTAMP NOT NULL
-);
-```
-
-2. Market Statistics
-
-```sql
-CREATE TABLE market_statistics (
-  id SERIAL PRIMARY KEY,
-  project_id INTEGER REFERENCES projects(id),
-  daily_platform_sales_primary NUMERIC(18, 6),
-  daily_platform_sales_secondary NUMERIC(18, 6),
-  daily_users INTEGER,
-  total_sales_primary NUMERIC(18, 6),
-  total_sales_secondary NUMERIC(18, 6),
-  floor_price NUMERIC(18, 6),
-  median_price NUMERIC(18, 6),
-  sales_last_24h_primary NUMERIC(18, 6),
-  sales_last_24h_secondary NUMERIC(18, 6),
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
-);
-```
-
-3. Market Statistics Charts
-
-```sql
-CREATE TABLE market_statistics_charts (
-  id SERIAL PRIMARY KEY,
-  project_id INTEGER REFERENCES projects(id),
-  chart_type VARCHAR(255) NOT NULL,
-  data JSONB NOT NULL,
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
-);
-```
-
-### Implementation Steps
-
-1. Develop the Listener/Indexer service using Node.js and connect it to the Ethereum network.
-2. Subscribe to events emitted by the `GenerativeArtProject` and `GenerativeArtNFT` smart contracts.
-3. Implement event handlers to parse the event data and update the corresponding database tables.
-4. Implement a mechanism to handle reorgs and chain reorganizations.
-5. Develop an API for querying the collected data and generating market statistics.
-6. Integrate the Listener/Indexer service with the existing backend server and frontend application.
-
 ### Implementation Schedule
 
 1. Week 1-2: Design and implement the GenerativeArtProject and GenerativeArtNFT smart contracts.
@@ -424,6 +368,53 @@ CREATE TABLE rendered_images (
   id SERIAL PRIMARY KEY,
   nft_id INTEGER NOT NULL REFERENCES nfts(id),
   image_url VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+```
+
+9. Contract Events
+
+```sql
+CREATE TABLE contract_events (
+  id SERIAL PRIMARY KEY,
+  event_name VARCHAR(255) NOT NULL,
+  contract_address VARCHAR(255) NOT NULL,
+  block_number INTEGER NOT NULL,
+  transaction_hash VARCHAR(255) NOT NULL,
+  event_data JSONB NOT NULL,
+  created_at TIMESTAMP NOT NULL
+);
+```
+
+10. Market Statistics
+
+```sql
+CREATE TABLE market_statistics (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES projects(id),
+  daily_platform_sales_primary NUMERIC(18, 6),
+  daily_platform_sales_secondary NUMERIC(18, 6),
+  daily_users INTEGER,
+  total_sales_primary NUMERIC(18, 6),
+  total_sales_secondary NUMERIC(18, 6),
+  floor_price NUMERIC(18, 6),
+  median_price NUMERIC(18, 6),
+  sales_last_24h_primary NUMERIC(18, 6),
+  sales_last_24h_secondary NUMERIC(18, 6),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+```
+
+11. Market Statistics Charts
+
+```sql
+CREATE TABLE market_statistics_charts (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES projects(id),
+  chart_type VARCHAR(255) NOT NULL,
+  data JSONB NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );
