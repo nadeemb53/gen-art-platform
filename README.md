@@ -17,7 +17,7 @@ The system architecture consists of the following components:
 
 1. Frontend: A web application built using React and TypeScript, allowing users to browse, mint, and trade NFTs.
 2. Backend: A Node.js server built using TypeScript and Express, handling API requests and interacting with the Ethereum blockchain.
-3. Database: A PostgreSQL database for storing data created by the smart contracts.
+3. Database: A PostgreSQL database for storing data created by the smart contracts and front-end app.
 4. Rendering Pipeline: A module for generating images from the generative art code.
 5. Decentralized Media Cluster: A module for storing and serving files, such as project details and NFT metadata.
 6. Marketplace Smart Contract: A smart contract for trading NFTs.
@@ -153,6 +153,79 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 }
 ```
 
+### Listener/Indexer Service
+
+The Listener/Indexer service is a separate component of the Generative Art platform that listens to events emitted by the smart contracts and updates the database with the relevant information. This service is crucial for providing market statistics and ensuring the platform's data is up-to-date.
+
+The Listener/Indexer service can be implemented using a Node.js server that connects to the Ethereum network, listens to contract events, and updates the PostgreSQL database accordingly.
+
+#### Key Features:
+
+1. Subscribe to events emitted by the `GenerativeArtProject` and `GenerativeArtNFT` smart contracts.
+2. Parse the event data and update the database tables with the relevant information.
+3. Handle reorgs and chain reorganizations to ensure data consistency.
+4. Provide an API for querying the collected data and generating market statistics.
+
+### Database Tables for Listener/Indexer Service
+
+To store data collected by the Listener/Indexer service, we will need the following additional database tables:
+
+1. Contract Events
+
+```sql
+CREATE TABLE contract_events (
+  id SERIAL PRIMARY KEY,
+  event_name VARCHAR(255) NOT NULL,
+  contract_address VARCHAR(255) NOT NULL,
+  block_number INTEGER NOT NULL,
+  transaction_hash VARCHAR(255) NOT NULL,
+  event_data JSONB NOT NULL,
+  created_at TIMESTAMP NOT NULL
+);
+```
+
+2. Market Statistics
+
+```sql
+CREATE TABLE market_statistics (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES projects(id),
+  daily_platform_sales_primary NUMERIC(18, 6),
+  daily_platform_sales_secondary NUMERIC(18, 6),
+  daily_users INTEGER,
+  total_sales_primary NUMERIC(18, 6),
+  total_sales_secondary NUMERIC(18, 6),
+  floor_price NUMERIC(18, 6),
+  median_price NUMERIC(18, 6),
+  sales_last_24h_primary NUMERIC(18, 6),
+  sales_last_24h_secondary NUMERIC(18, 6),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+```
+
+3. Market Statistics Charts
+
+```sql
+CREATE TABLE market_statistics_charts (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES projects(id),
+  chart_type VARCHAR(255) NOT NULL,
+  data JSONB NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+```
+
+### Implementation Steps
+
+1. Develop the Listener/Indexer service using Node.js and connect it to the Ethereum network.
+2. Subscribe to events emitted by the `GenerativeArtProject` and `GenerativeArtNFT` smart contracts.
+3. Implement event handlers to parse the event data and update the corresponding database tables.
+4. Implement a mechanism to handle reorgs and chain reorganizations.
+5. Develop an API for querying the collected data and generating market statistics.
+6. Integrate the Listener/Indexer service with the existing backend server and frontend application.
+
 ### Implementation Schedule
 
 1. Week 1-2: Design and implement the GenerativeArtProject and GenerativeArtNFT smart contracts.
@@ -173,12 +246,6 @@ To handle a large volume of requests (2000 req/s) in a public API that exposes t
 3. Use a caching mechanism: Implement caching at various levels (in-memory, server-side, or client-side) to reduce the load on the database and improve response times. Popular caching solutions include Redis, Memcached, or even a CDN for caching static assets.
 
 4. Rate limiting: Implement rate limiting to prevent abuse of the API and to ensure fair usage among clients. Rate limiting can be applied at various levels, such as IP address, user account, or API key.
-
-### Improvement Proposals
-
-1. Implement different pricing strategies for minting NFTs, such as Step Dutch Auction and Linear Dutch Auction.
-2. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
-3. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
 
 ### APIs
 
@@ -247,93 +314,119 @@ To fulfill the requirements of the users and artists on the platform, we would n
    - POST /render: Generate an image from generative art code and unique seed
 ```
 
-### Database schema:
+### Database Schema
 
-Table 1: GenerativeArtProjects
+To store data for the Generative Art platform, we will need the following database tables:
 
-This table stores the project details, minting rules, and splits for funds distribution. The columns for this table include:
+1. Users
 
-```bash
-id: Unique ID for the project
-name: Name of the project
-editions: Total number of editions available for the project
-price: Price per edition in ETH
-opening_time: Time when the project opens for minting
-code_pointer: Pointer to the generative art code
-details_pointer: Pointer to the project details
-royalties: Percentage of royalties to be distributed to the artist
-created_at: Timestamp for the project creation
+```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 2: GenerativeArtNFTs
+2. Projects
 
-This table stores the NFTs associated with the generative art projects. The columns for this table include:
-
-```bash
-id: Unique ID for the NFT
-project_id: The ID of the project associated with this NFT
-seed: The seed used to generate the NFT
-minted_at: Timestamp for the NFT minting
-owner: Ethereum address of the NFT owner
+```sql
+CREATE TABLE projects (
+  id SERIAL PRIMARY KEY,
+  creator_id INTEGER NOT NULL REFERENCES users(id),
+  name VARCHAR(255) NOT NULL,
+  editions INTEGER NOT NULL,
+  price NUMERIC(18, 6) NOT NULL,
+  opening_time TIMESTAMP NOT NULL,
+  code_pointer VARCHAR(255) NOT NULL,
+  details_pointer VARCHAR(255) NOT NULL,
+  royalties INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 3: GenerativeArtNFTMetadata
+3. Splits
 
-This table stores the metadata associated with the NFTs. The columns for this table include:
-
-```bash
-id: Unique ID for the metadata
-nft_id: The ID of the NFT associated with this metadata
-metadata: JSON-formatted metadata for the NFT
+```sql
+CREATE TABLE splits (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id),
+  beneficiary_address VARCHAR(255) NOT NULL,
+  percentage INTEGER NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 4: GenerativeArtTransactions
+4. NFTs
 
-This table stores the transactions associated with the NFTs. The columns for this table include:
-
-```bash
-id: Unique ID for the transaction
-nft_id: The ID of the NFT associated with this transaction
-type: The type of transaction (mint, transfer, sale)
-amount: The amount of ETH involved in the transaction
-from_address: Ethereum address of the sender
-to_address: Ethereum address of the receiver
-created_at: Timestamp for the transaction creation
+```sql
+CREATE TABLE nfts (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id),
+  token_id INTEGER NOT NULL,
+  owner_id INTEGER NOT NULL REFERENCES users(id),
+  seed VARCHAR(255) NOT NULL,
+  token_uri VARCHAR(255),
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 5: GenerativeArtUsers
+5. Sales
 
-This table stores the user details of the platform. The columns for this table include:
-
-```bash
-id: Unique ID for the user
-ethereum_address: Ethereum address of the user
-username: Username of the user
-created_at: Timestamp for the user creation
+```sql
+CREATE TABLE sales (
+  id SERIAL PRIMARY KEY,
+  nft_id INTEGER NOT NULL REFERENCES nfts(id),
+  seller_id INTEGER NOT NULL REFERENCES users(id),
+  price NUMERIC(18, 6) NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 6: GenerativeArtVotes
+6. Offers
 
-This table stores the votes cast by the users for the governance system. The columns for this table include:
-
-```bash
-id: Unique ID for the vote
-user_id: The ID of the user who cast the vote
-project_id: The ID of the project associated with this vote
-vote: The vote cast (for or against)
-created_at: Timestamp for the vote creation
+```sql
+CREATE TABLE offers (
+  id SERIAL PRIMARY KEY,
+  nft_id INTEGER NOT NULL REFERENCES nfts(id),
+  buyer_id INTEGER NOT NULL REFERENCES users(id),
+  price NUMERIC(18, 6) NOT NULL,
+  status VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
-Table 7: GenerativeArtStakes
+7. Media
 
-This table stores the stakes made by the users to earn rewards based on the popularity of the project. The columns for this table include:
+```sql
+CREATE TABLE media (
+  id SERIAL PRIMARY KEY,
+  file_hash VARCHAR(255) NOT NULL,
+  file_url VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
+```
 
-```bash
-id: Unique ID for the stake
-user_id: The ID of the user who made the stake
-nft_id: The ID of the NFT associated with this stake
-amount: The amount of ETH staked
-created_at: Timestamp for the stake creation
+8. Rendered Images
+
+```sql
+CREATE TABLE rendered_images (
+  id SERIAL PRIMARY KEY,
+  nft_id INTEGER NOT NULL REFERENCES nfts(id),
+  image_url VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP NOT NULL
+);
 ```
 
 ```mermaid
@@ -379,6 +472,41 @@ graph TD
   L --> C
 ```
 
-Conclusion
+### Conclusion
 
-In this case study, we have outlined the requirements, system architecture, and implementation schedule for a Generative Art platform on Ethereum. By implementing core smart contracts and designing a scalable system architecture, we can create a platform that allows artists to showcase their work and users to mint and trade unique NFTs.
+In this case study, we have outlined the requirements, system architecture, and implementation schedule for a Generative Art platform on Ethereum. By implementing core smart contracts and designing a scalable system architecture, we can create a platform that allows artists to showcase their work and users to mint and trade unique NFTs. The following requirements are fulfilled:
+
+1. Artists can publish their Generative Art project on the platform:
+
+   - The `GenerativeArtProject` smart contract allows artists to create and manage projects with the required options.
+   - The API endpoints for projects enable artists to interact with the platform and upload their code and project details to the decentralized media network.
+
+2. Users can browse the different projects on a website:
+
+   - The frontend web application built using React and TypeScript allows users to browse and interact with the projects.
+
+3. Users can mint unique iterations of the projects:
+
+   - The `GenerativeArtNFT` smart contract handles the minting of NFTs with the required conditions and generates a unique seed for each iteration.
+   - The frontend application allows users to mint NFTs by interacting with the smart contract.
+
+4. NFTs should be revealed with an off-chain system:
+
+   - The rendering pipeline and decentralized media cluster handle the generation of images and metadata for the NFTs, which are then updated in the smart contract.
+
+5. Users can put their NFTs for sale on the platform and accept sales:
+
+   - The API endpoints for NFT trading enable users to list their NFTs for sale, accept offers, and interact with the `GenerativeArtNFT` smart contract.
+
+6. Users can make offers on other NFTs or project-wide offers and accept such offers:
+
+   - The API endpoints for offers allow users to make and manage offers on NFTs and interact with the smart contract.
+
+7. Users have access to market statistics:
+   - The API endpoints for market statistics provide the required data for overall and project-specific statistics, which can be displayed on the frontend application.
+
+### Improvement Proposals
+
+1. Implement different pricing strategies for minting NFTs, such as Step Dutch Auction and Linear Dutch Auction.
+2. Provide a feature for users to stake their NFTs and earn rewards based on the popularity of the project.
+3. Implement a governance system for the platform, allowing users to vote on upgrades and new features.
