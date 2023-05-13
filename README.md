@@ -23,6 +23,21 @@ The system architecture consists of the following components:
 6. Marketplace Smart Contract: A smart contract for trading NFTs.
 7. Backend Wallet Manager: A module for securely managing on-chain operations in the backend.
 
+### Diagram
+
+```mermaid
+graph TD
+  A[Frontend] -->|API Requests| B(Backend)
+  B -->|Interact with Ethereum Blockchain| C[Smart Contracts]
+  B -->|Store Data| D[Database]
+  B -->|Generate Images| E[Rendering Pipeline]
+  B -->|Store and Serve Files| F[Decentralized Media Cluster]
+  B -->|Manage Wallets| G[Backend Wallet Manager]
+  C -->|Emit Events| H[Listener/Indexer Service]
+  H -->|Update Database| D
+  I[Marketplace Smart Contract] --> C
+```
+
 ### Smart Contracts
 
 We will be implementing two core smart contracts for this application:
@@ -267,9 +282,7 @@ To store data for the Generative Art platform, we will need the following databa
 ```sql
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  username VARCHAR(255) UNIQUE NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
+  user_address VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );
@@ -418,49 +431,6 @@ CREATE TABLE market_statistics_charts (
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );
-```
-
-```mermaid
-graph TD
-  subgraph Frontend
-    A[React Web App]
-  end
-  subgraph Backend
-    B[Node.js Server]
-    C[Database Postgresql]
-    D[Backend Wallet Manager]
-  end
-  subgraph Ethereum
-    E[GenerativeArtProject Smart Contract]
-    F[GenerativeArtNFT Smart Contract]
-    G[Marketplace Smart Contract]
-  end
-  subgraph External Services
-    H[Rendering Pipeline]
-    I[Decentralized Media Cluster]
-    J[Content Delivery Network CDN]
-  end
-  subgraph Load Balancer
-    K[Load Balancer e.g. NGINX, AWS ELB]
-  end
-  subgraph Caching
-    L[Cache e.g. Redis, Memcached]
-  end
-  A --> K
-  K --> B
-  B --> C
-  B --> D
-  B --> E
-  B --> F
-  B --> G
-  B --> H
-  B --> I
-  B --> L
-  E --> F
-  F --> G
-  H --> I
-  I --> J
-  L --> C
 ```
 
 ### Conclusion
