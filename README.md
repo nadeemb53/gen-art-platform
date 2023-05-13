@@ -26,8 +26,8 @@ The system architecture comprises the following components:
 
 We will be implementing two core smart contracts that are part of the system architecture:
 
-8. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
-9. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
+9. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
+10. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
 
 ### System Architecture Diagram
 
