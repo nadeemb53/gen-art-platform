@@ -22,6 +22,7 @@ The system architecture comprises the following components:
 5. Decentralized Media Cluster: A module for storing and serving files, such as project details and NFT metadata.
 6. Marketplace Smart Contract: A smart contract for trading NFTs.
 7. Backend Wallet Manager: A module for securely managing on-chain operations in the backend.
+8. EventTracker: This service is a separate component that collects logs from confirmed blocks and parses events emitted by the smart contracts to update the database with the relevant information. This service is crucial for providing accurate market statistics and ensuring the platform's data is up-to-date.
 
 We will be implementing two core smart contracts that are part of the system architecture:
 
@@ -34,11 +35,11 @@ We will be implementing two core smart contracts that are part of the system arc
 graph TD
   A[Frontend] -->|API Requests| B(Backend)
   B -->|Interact with Ethereum Blockchain| C[Smart Contracts]
-  B -->|Store Data| D[Database]
+  B <--> |Store and retrieve Data| D[Database]
   B -->|Generate Images| E[Rendering Pipeline]
   B -->|Store and Serve Files| F[Decentralized Media Cluster]
   B -->|Manage Wallets| G[Backend Wallet Manager]
-  C -->|Emit Events| H[Listener/Indexer Service]
+  C -->|Emit Events| H[EventTracker Service]
   H -->|Update Database| D
   I[Marketplace Smart Contract] --> C
   J[GenerativeArtProject] --> C
@@ -198,13 +199,7 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 }
 ```
 
-### Listener/Indexer Service
-
-The Listener/Indexer service is a separate component of the Generative Art platform that listens to events emitted by the smart contracts and updates the database with the relevant information. This service is crucial for providing market statistics and ensuring the platform's data is up-to-date.
-
-The Listener/Indexer service can be implemented using a Node.js server that connects to the Ethereum network, listens to contract events, and updates the PostgreSQL database accordingly.
-
-#### Key Features:
+#### EventTracker Service Key Features:
 
 1. Subscribe to events emitted by the `GenerativeArtProject`, `GenerativeArtNFT`and `Marketplace` smart contracts.
 2. Parse the event data and update the database tables with the relevant information.
