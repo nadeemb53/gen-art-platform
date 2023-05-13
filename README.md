@@ -1,29 +1,34 @@
-# Generative Art Platform
+# Generative Art Platform: A Blockchain Case Study
 
-## Case Study
+## Overview
 
-In this case study, we'll be creating a Generative Art platform on the Ethereum blockchain. This platform will allow artists to publish their projects, and users can mint unique iterations of these projects as NFTs. We'll be focusing on the implementation of core smart contracts and providing a high-level overview of the system architecture.
+This case study presents the design and implementation of a Generative Art platform on the Ethereum blockchain. The platform enables artists to publish their projects and allows users to mint unique iterations of these projects as NFTs. The focus is on the implementation of core smart contracts and providing a high-level overview of the system architecture.
 
-### Deliverables:
+## Key Deliverables
 
-1. Smart Contracts in Solidity
-2. Schema of the system architecture
-3. Explanations of various system components
-4. Rough projection of the implementation schedule
+1. Solidity Smart Contracts
+2. System Architecture Schema
+3. Component Explanations
+4. Implementation Timeline
 
-### System Architecture
+## System Architecture
 
-The system architecture consists of the following components:
+The system architecture comprises the following components:
 
-1. Frontend: A web application built using React and TypeScript, allowing users to browse, mint, and trade NFTs.
-2. Backend: A Node.js server built using TypeScript and Express, handling API requests and interacting with the Ethereum blockchain.
-3. Database: A PostgreSQL database for storing data created by the smart contracts and front-end app.
-4. Rendering Pipeline: A module for generating images from the generative art code.
+1. Frontend: A React and TypeScript-based web application for browsing, minting, and trading NFTs.
+2. Backend: A Node.js server using TypeScript and Express to handle API requests and interact with the Ethereum blockchain.
+3. Database: A PostgreSQL database to store data created by smart contracts and front-end applications.
+4. Rendering Pipeline: A module for generating images from generative art code.
 5. Decentralized Media Cluster: A module for storing and serving files, such as project details and NFT metadata.
 6. Marketplace Smart Contract: A smart contract for trading NFTs.
 7. Backend Wallet Manager: A module for securely managing on-chain operations in the backend.
 
-### Diagram
+We will be implementing two core smart contracts that are part of the system architecture:
+
+8. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
+9. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
+
+### System Architecture Diagram
 
 ```mermaid
 graph TD
@@ -41,11 +46,6 @@ graph TD
 ```
 
 ### Smart Contracts
-
-We will be implementing two core smart contracts for this application:
-
-1. GenerativeArtProject: This contract will handle the creation and management of generative art projects. It will store project details, minting rules, and splits for funds distribution.
-2. GenerativeArtNFT: This contract will handle the minting, revealing, and trading of NFTs associated with the generative art projects.
 
 #### GenerativeArtProject.sol:
 
