@@ -211,10 +211,6 @@ The Listener/Indexer service can be implemented using a Node.js server that conn
 3. Handle reorgs and chain reorganizations to ensure data consistency.
 4. Provide an API for querying the collected data and generating market statistics.
 
-### Database Tables for Listener/Indexer Service
-
-To store data collected by the Listener/Indexer service, we will need the following additional database tables:
-
 ### Implementation Schedule
 
 1. Week 1-2: Design and implement the GenerativeArtProject and GenerativeArtNFT smart contracts.
