@@ -206,7 +206,7 @@ The Listener/Indexer service can be implemented using a Node.js server that conn
 
 #### Key Features:
 
-1. Subscribe to events emitted by the `GenerativeArtProject` and `GenerativeArtNFT` smart contracts.
+1. Subscribe to events emitted by the `GenerativeArtProject`, `GenerativeArtNFT`and `Marketplace` smart contracts.
 2. Parse the event data and update the database tables with the relevant information.
 3. Handle reorgs and chain reorganizations to ensure data consistency.
 4. Provide an API for querying the collected data and generating market statistics.
