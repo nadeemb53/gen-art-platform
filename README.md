@@ -36,6 +36,8 @@ graph TD
   C -->|Emit Events| H[Listener/Indexer Service]
   H -->|Update Database| D
   I[Marketplace Smart Contract] --> C
+  J[GenerativeArtProject] --> C
+  K[GenerativeArtNFT] --> C
 ```
 
 ### Smart Contracts
@@ -48,10 +50,9 @@ We will be implementing two core smart contracts for this application:
 #### GenerativeArtProject.sol:
 
 ```solidity
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "./GenerativeArtNFT.sol";
 
 contract GenerativeArtProject {
     struct Project {
@@ -69,7 +70,8 @@ contract GenerativeArtProject {
     mapping(uint256 => Project) public projects;
     uint256 public projectCount;
 
-    event ProjectCreated(uint256 indexed projectId, address indexed creator);
+    event ProjectCreated(uint256 indexed projected, address indexed creator);
+    event ProjectUpdated(uint256 indexed projected, address indexed updater);
 
     function createProject(
         string memory _name,
@@ -85,9 +87,8 @@ contract GenerativeArtProject {
         require(_editions > 0, "Invalid number of editions");
         require(_price > 0, "Invalid price");
         require(_splits.length == _percentages.length, "Splits and percentages length mismatch");
-
         uint256 projectId = projectCount++;
-        projects[projectId] = Project({
+        projects[projected] = Project({
             name: _name,
             editions: _editions,
             price: _price,
@@ -98,8 +99,38 @@ contract GenerativeArtProject {
             percentages: _percentages,
             royalties: _royalties
         });
-
         emit ProjectCreated(projectId, msg.sender);
+    }
+
+    function updateProject(
+        uint256 _projectId,
+        string memory _name,
+        uint256 _editions,
+        uint256 _price,
+        uint256 _openingTime,
+        string memory _codePointer,
+        string memory _detailsPointer,
+        address[] memory _splits,
+        uint256[] memory _percentages,
+        uint256 _royalties
+    ) external {
+        require(_projectId < projectCount, "Invalid project ID");
+        require(_editions > 0, "Invalid number of editions");
+        require(_price > 0, "Invalid price");
+        require(_splits.length == _percentages.length, "Splits and percentages length mismatch");
+
+        Project storage project = projects[_projectId];
+        project.name = _name;
+        project.editions = _editions;
+        project.price = _price;
+        project.openingTime = _openingTime;
+        project.codePointer = _codePointer;
+        project.detailsPointer = _detailsPointer;
+        project.splits = _splits;
+        project.percentages = _percentages;
+        project.royalties = _royalties;
+
+        emit ProjectUpdated(_projectId, msg.sender);
     }
 }
 ```
@@ -107,7 +138,7 @@ contract GenerativeArtProject {
 #### GenerativeArtNFT.sol:
 
 ```solidity
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -118,11 +149,13 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 
     GenerativeArtProject public artProject;
     uint256 public nftCount;
+
     mapping(uint256 => uint256) public tokenProject;
     mapping(uint256 => bytes32) public tokenSeed;
     mapping(uint256 => string) private _tokenURIs;
 
     event NFTMinted(uint256 indexed tokenId, address indexed minter);
+    event NFTRevealed(uint256 indexed tokenId, address indexed revealer);
 
     constructor(address _artProject) ERC721("GenerativeArtNFT", "GANFT") {
         artProject = GenerativeArtProject(_artProject);
@@ -130,30 +163,27 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 
     function mint(uint256 _projectId) external payable {
         GenerativeArtProject.Project memory project = artProject.projects(_projectId);
-
         require(project.editions > 0, "Project sold out");
         require(msg.value >= project.price, "Insufficient payment");
         require(block.timestamp >= project.openingTime, "Project not open yet");
 
         uint256 tokenId = nftCount++;
         _safeMint(msg.sender, tokenId);
-
         tokenProject[tokenId] = _projectId;
         tokenSeed[tokenId] = keccak256(abi.encodePacked(block.timestamp, msg.sender, tokenId));
-
         project.editions--;
 
         emit NFTMinted(tokenId, msg.sender);
     }
 
-    function setTokenURI(uint256 tokenId, string memory _tokenURI) external onlyOwner {
+    function revealTokenURI(uint256 tokenId, string memory _tokenURI) external onlyOwner {
         require(_exists(tokenId), "Token does not exist");
         _tokenURIs[tokenId] = _tokenURI;
+        emit NFTRevealed(tokenId, msg.sender);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), "Token does not exist");
-
         string memory _tokenURI = _tokenURIs[tokenId];
         return bytes(_tokenURI).length > 0 ? _tokenURI : "";
     }
