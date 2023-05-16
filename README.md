@@ -53,8 +53,6 @@ graph TD
 ```solidity
 pragma solidity ^0.8.18;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
 contract GenerativeArtProject {
     struct Project {
         string name;
@@ -202,9 +200,8 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 #### EventTracker Service Key Features:
 
 1. Subscribe to events emitted by the `GenerativeArtProject`, `GenerativeArtNFT`and `Marketplace` smart contracts.
-2. Parse the event data and update the database tables with the relevant information.
+2. Parse the event data and update the database tables with the relevant information. This includes querying the smart contracts for additional data.
 3. Handle reorgs and chain reorganizations to ensure data consistency.
-4. Provide an API for querying the collected data and generating market statistics.
 
 ### Implementation Schedule
 
