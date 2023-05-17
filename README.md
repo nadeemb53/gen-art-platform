@@ -44,6 +44,7 @@ graph TD
   I[Marketplace Smart Contract] --> C
   J[GenerativeArtProject] --> C
   K[GenerativeArtNFT] --> C
+  L[RANDAO] --> K
 ```
 
 ### Smart Contracts
@@ -200,7 +201,7 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 }
 ```
 
-#### Optional RANDAO
+#### RANDAO.sol
 
 Used to enhance randomness of token seed value
 
