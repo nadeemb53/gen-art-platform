@@ -53,7 +53,9 @@ graph TD
 ```solidity
 pragma solidity ^0.8.18;
 
-contract GenerativeArtProject {
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract GenerativeArtProject is Ownable {
     struct Project {
         string name;
         uint256 editions;
@@ -87,7 +89,7 @@ contract GenerativeArtProject {
         require(_price > 0, "Invalid price");
         require(_splits.length == _percentages.length, "Splits and percentages length mismatch");
         uint256 projectId = projectCount++;
-        projects[projected] = Project({
+        projects[projectId] = Project({
             name: _name,
             editions: _editions,
             price: _price,
@@ -112,7 +114,7 @@ contract GenerativeArtProject {
         address[] memory _splits,
         uint256[] memory _percentages,
         uint256 _royalties
-    ) external {
+    ) external onlyOwner {
         require(_projectId < projectCount, "Invalid project ID");
         require(_editions > 0, "Invalid number of editions");
         require(_price > 0, "Invalid price");
