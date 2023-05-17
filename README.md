@@ -45,6 +45,7 @@ graph TD
   J[GenerativeArtProject] --> C
   K[GenerativeArtNFT] --> C
   L[RANDAO] --> K
+  A --> C
 ```
 
 ### Smart Contracts
