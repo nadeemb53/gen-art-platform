@@ -144,6 +144,7 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./GenerativeArtProject.sol";
+import "./Randao.sol";
 
 contract GenerativeArtNFT is ERC721Enumerable, Ownable {
     using Strings for uint256;
@@ -171,7 +172,7 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
         uint256 tokenId = nftCount++;
         _safeMint(msg.sender, tokenId);
         tokenProject[tokenId] = _projectId;
-        tokenSeed[tokenId] = keccak256(abi.encodePacked(block.timestamp, msg.sender, tokenId));
+        tokenSeed[tokenId] = keccak256(abi.encodePacked(randao.randomNumber(), msg.sender, tokenId, tx.gasprice, nonce));
         project.editions--;
 
         emit NFTMinted(tokenId, msg.sender);
@@ -195,6 +196,40 @@ contract GenerativeArtNFT is ERC721Enumerable, Ownable {
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
+    }
+}
+```
+
+#### Optional RANDAO
+
+Used to enhance randomness of token seed value
+
+```solidity
+pragma solidity ^0.8.18;
+
+contract Randao {
+    struct Commit {
+        bytes32 hash;
+        bool revealed;
+    }
+
+    mapping(address => Commit) public commits;
+    uint256 public revealCount;
+    uint256 public randomNumber;
+
+    function commit(bytes32 _hash) external {
+        require(commits[msg.sender].hash == 0, "Already committed");
+        commits[msg.sender] = Commit(_hash, false);
+    }
+
+    function reveal(uint256 _secret) external {
+        require(commits[msg.sender].hash != 0, "No commit found");
+        require(!commits[msg.sender].revealed, "Already revealed");
+        require(keccak256(abi.encodePacked(_secret)) == commits[msg.sender].hash, "Invalid secret");
+
+        commits[msg.sender].revealed = true;
+        revealCount++;
+        randomNumber = randomNumber ^ _secret;
     }
 }
 ```
