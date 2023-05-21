@@ -353,7 +353,7 @@ CREATE TABLE projects (
   creator_id INTEGER NOT NULL REFERENCES users(id),
   name VARCHAR(255) NOT NULL,
   editions INTEGER NOT NULL,
-  price NUMERIC(18, 6) NOT NULL,
+  price BIGINT NOT NULL,
   opening_time TIMESTAMP NOT NULL,
   code_pointer VARCHAR(255) NOT NULL,
   details_pointer VARCHAR(255) NOT NULL,
@@ -398,7 +398,7 @@ CREATE TABLE sales (
   id SERIAL PRIMARY KEY,
   nft_id INTEGER NOT NULL REFERENCES nfts(id),
   seller_id INTEGER NOT NULL REFERENCES users(id),
-  price NUMERIC(18, 6) NOT NULL,
+  price BIGINT NOT NULL,
   status VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
@@ -412,7 +412,7 @@ CREATE TABLE offers (
   id SERIAL PRIMARY KEY,
   nft_id INTEGER NOT NULL REFERENCES nfts(id),
   buyer_id INTEGER NOT NULL REFERENCES users(id),
-  price NUMERIC(18, 6) NOT NULL,
+  price BIGINT NOT NULL,
   status VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
@@ -463,17 +463,17 @@ CREATE TABLE contract_events (
 CREATE TABLE market_statistics (
   id SERIAL PRIMARY KEY,
   project_id INTEGER REFERENCES projects(id),
-  daily_platform_sales_primary NUMERIC(18, 6),
-  daily_platform_sales_secondary NUMERIC(18, 6),
+  daily_platform_sales_primary BIGINT NOT NULL,
+  daily_platform_sales_secondary BIGINT NOT NULL,
   daily_users INTEGER,
-  total_sales_primary NUMERIC(18, 6),
-  total_sales_secondary NUMERIC(18, 6),
-  floor_price NUMERIC(18, 6),
-  median_price NUMERIC(18, 6),
-  sales_last_24h_primary NUMERIC(18, 6),
-  sales_last_24h_secondary NUMERIC(18, 6),
-  created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP NOT NULL
+  total_sales_primary BIGINT NOT NULL,
+  total_sales_secondary BIGINT NOT NULL,
+  floor_price BIGINT NOT NULL,
+  median_price BIGINT NOT NULL,
+  sales_last_24h_primary BIGINT NOT NULL,
+  sales_last_24h_secondary BIGINT NOT NULL,
+  created_at BIGINT NOT NULL,
+  updated_at BIGINT NOT NULL,
 );
 ```
 
